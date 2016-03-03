@@ -3,7 +3,7 @@
 A basic event planner to practice forms and Google Polymer for
 Udacity's Senior Web Developer Nanodegree.
 
-# Try It Out
+## Try It Out
 
 Make sure you have gulp, npm, and bower installed by running this in the
 project's root directory:
