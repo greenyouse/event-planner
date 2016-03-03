@@ -27,5 +27,5 @@ gulp
 And see the results:
 
 ```sh
-python -m SimpleHTTPServer
+cd dist && python -m SimpleHTTPServer
 ```
