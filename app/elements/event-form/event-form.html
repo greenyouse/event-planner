@@ -1,0 +1,38 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<!-- Here's a widget for editing event info. It displays all the relevant event
+     information in a paper card form -->
+<dom-module id="event-form">
+
+  <template>
+    <paper-material elevation="1">
+      <style>
+        /* /deep/ wasn't working properly for styling the ShadowDOM :( */
+        .errorToast {
+          background-color: red;
+          color: white;
+        }
+      </style>
+      <h2 class="page-title">{{name}}</h2>
+      <p>Make a new event</p>
+      <form is="iron-form" id="eventForm" method="post" action="/" autocomplete="on">
+        <paper-input name="name" label="event name" placeholder="Event Name" value="{{name::input}}" required autofocus></paper-input>
+        <paper-input name="host" label="event host" placeholder="Host's Name" value="{{host::input}}"></paper-input>
+        <paper-input name="type" label="event type" placeholder="Event Type" value="{{type::input}}"></paper-input>
+        <datetime-input id="startDate" name="startDate" label="start date" datetime="{{startDateTime}}" date="{{startDate}}" time="{{startTime}}"></datetime-input>
+        <datetime-input id="endDate" name="endDate" label="end date" datetime="{{endDateTime}}" date="{{endDate}}" time="{{endTime}}"></datetime-input>
+        <input-list name="guests" items="{{guests}}"></input-list>
+        <places-input id="woot" place="{{address}}"></places-input>
+        <paper-input id="details" label="details" name="details" placeholder="Event Details" value="{{details}}"></paper-input>
+        <br>
+        <br>
+        <paper-button id="submitEvent" type="submit" raised>Add Event</paper-button>
+      </form>
+      <paper-toast id="eventToast" class="fit-bottom" />
+      <paper-toast id="failureToast" class="fit-bottom errorToast" />
+    </paper-material>
+  </template>
+
+  <script src="event-form.js"></script>
+</dom-module>

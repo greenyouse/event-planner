@@ -1,0 +1,19 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="places-input">
+  <template>
+    <paper-input id="address" name="address" label="address" placeholder="Event Address" value="{{place}}" required></paper-input>
+    <!--
+        TODO: capture the selected address and destructure it so it can fill out multiple fields,
+        might be good to make a google-map-input component that's a little more generic
+        <paper-input label="city" value="{{city}}"></paper-input>
+
+        also make the required attribute optional
+        -->
+  </template>
+
+  <script src="https://maps.googleapis.com/maps/api/js?libraries=places" delay async></script>
+  <script type="text/javascript" src="places-input.js"></script>
+
+</dom-module>

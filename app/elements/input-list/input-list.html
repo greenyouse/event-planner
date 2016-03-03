@@ -1,0 +1,35 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="input-list">
+  <template>
+
+    <style is="custom-style">
+      .flex {
+        @apply(--layout-horizontal);
+      }
+
+      .flexchild {
+        @apply(--layout-flex);
+      }
+
+      li {
+        list-style-type: none;
+      }
+
+    </style>
+
+    <div class="container flex">
+      <paper-input name="[[name]]" label="[[name]]" value="{{newItem}}" class="flexchild"></paper-input>
+      <paper-icon-button id="add" icon="add-circle" title="add" on-tap="addItem"></paper-icon-button>
+    </div>
+    <ul>
+      <template is="dom-repeat" items="{{items}}">
+        <li><span>{{item}}</span><paper-icon-button icon="clear" on-tap="removeItem"></paper-icon-button></li>
+      </template>
+    </ul>
+  </template>
+
+  <script type="text/javascript" src="input-list.js"></script>
+
+</dom-module>

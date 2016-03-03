@@ -1,0 +1,26 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<!-- this a weak polyfill for datetime-local inputs
+     For unsupported browsers it will be a paper-input with a placeholder and
+     validator for the datetime.
+  -->
+<dom-module id="datetime-input">
+  <template>
+    <style is="custom-style">
+      .flex {
+        @apply(--layout-horizontal);
+      }
+
+      .flexchild {
+        @apply(--layout-flex);
+      }
+
+    </style>
+    <div id="dtForm">
+    </div>
+  </template>
+
+  <script src="datetime-input.js"></script>
+
+</dom-module>
