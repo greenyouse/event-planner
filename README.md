@@ -15,7 +15,7 @@ npm install -g gulp bower && npm install && bower install
 Then download the bower dependencies:
 
 ```sh
-bower install
+npm install && bower install
 ```
 
 Compile the project files:
