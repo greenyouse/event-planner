@@ -12,7 +12,7 @@ project's root directory:
 npm install -g gulp bower && npm install && bower install
 ```
 
-Then download the bower dependencies:
+Then download the npm and bower dependencies:
 
 ```sh
 npm install && bower install
