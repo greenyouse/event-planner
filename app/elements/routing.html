@@ -60,6 +60,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     };
 
+    function loadProfile(ctx, next) {
+      var email = app.getCredentials();
+
+      localforage.getItem(email).then(function(acct) {
+          var name = acct.name || "",
+              passwd = acct.password,
+              bday = acct.birthday || "",
+              employer = acct.employer || "",
+              job = acct.title || "";
+
+          ctx.params.email = email;
+          ctx.params.name = name;
+          ctx.params.profilePasswd = passwd;
+          ctx.params.birthday = bday;
+          ctx.params.profileEmployer = employer;
+          ctx.params.profileJob = job;
+
+          next();
+      });
+    };
+
     // Routes
     page('/*', scrollToTop, closeDrawer, function(ctx, next) {
       next();
@@ -87,11 +108,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app.params = ctx.params;
     });
 
-    page('/profile', withProfile, function() {
+    page('/profile', withProfile, loadProfile, function(ctx) {
       app.menu = 'app';
       app.route = 'profile';
-    },
-    app.loadProfileForm());
+      app.params = ctx.params;
+    });
 
     page('/login', function() {
       app.menu = 'login';

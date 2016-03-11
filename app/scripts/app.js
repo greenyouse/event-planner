@@ -10,9 +10,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 (function(document) {
   'use strict';
 
-  // Grab a reference to our auto-binding template
-  // and give it some initial binding values
-  // Learn more about auto-binding templates at http://goo.gl/Dx1u2g
   var app = document.querySelector('#app');
 
   // Sets app default base URL
@@ -20,7 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   if (window.location.port === '') {  // if production
     // Uncomment app.baseURL below and
     // set app.baseURL to '/your-pathname/' if running from folder in production
-    // app.baseUrl = '/polymer-starter-kit/';
+    // app.baseUrl = '/event-planner/';
   }
 
   app.displayInstalledToast = function() {
@@ -30,45 +27,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   };
 
-  // Listen for template bound event to know when bindings
-  // have resolved and content has been stamped to the page
-  app.addEventListener('dom-change', function() {
-    var birthday = document.getElementById('birthday');
-    birthday.setAttribute('placeholder', app.today());
-    birthday.addEventListener('blur', function(event) {
-      app.dateValidator(birthday, event.target.value);
-    });
-  });
-
   window.addEventListener('WebComponentsReady', function() {
-    // this passes the form submission to app.setCredentials
+    // these pass the form submissions either validate or create an account
     document.getElementById('loginForm').addEventListener('iron-form-submit', app.setCredentials);
     document.getElementById('signupForm').addEventListener('iron-form-submit', app.createAccount);
-    document.getElementById('profileForm').addEventListener('iron-form-submit', app.updateAccount);
   });
-
-  /*
-   validator for checking date format of input
-   badExp is for coercing manual inputs
-   goodExp is for inputs supported by the "date" type (chrome)
-
-   TODO: make a proper polyfill for the date input so it's easier to use
-   and have it normalize the date format for storage
-   */
-  app.dateValidator = function(parent, bday) {
-    var badExp = /\d{2}\/\d{2}\/\d{4}/g,
-        goodExp = /\d{4}-\d{2}-\d{2}/g;
-
-    if (badExp.exec(bday)) {
-      bday = bday.split('/').reverse().join('-');
-    }
-
-    if (!goodExp.exec(bday) && bday !== "") {
-      parent.setCustomValidity('Please enter birthday as mm/dd/yyyy');
-    } else {
-      parent.setCustomValidity('');
-    }
-  };
 
   // Main area's paper-scroll-header-panel custom condensing transformation of
   // the appName in the middle-container and the bottom title in the bottom-container.
@@ -232,49 +195,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
   };
 
-  app.updateAccount = function(value) {
-    var name = value.detail.name,
-        passwd = value.detail.password,
-        bday = value.detail.birthday,
-        employer = value.detail.employer,
-        job = value.detail.title,
-        email = app.getCredentials();
-
-    var profile = {name: name,
-                   email: email,
-                   password: passwd,
-                   birthday: bday,
-                   employer: employer,
-                   title: job};
-
-    localforage.setItem(email, profile).then(function(val) {
-      var toast = app.$.updateToast,
-          msg = 'Profile updated successfully';
-
-      app.toastMessage(toast, msg, profileForm);
-    });
-  };
-
-  app.loadProfileForm = function() {
-    var email = app.getCredentials();
-
-    localforage.getItem(email).then(function(acct) {
-      var name = acct.name || "",
-          passwd = acct.password,
-          bday = acct.birthday || "",
-          employer = acct.employer || "",
-          job = acct.title || "";
-
-      document.getElementById('profileName').value = name;
-      document.getElementById('profilePasswd').value = passwd;
-      document.getElementById('birthday').value = bday;
-      document.getElementById('profileEmployer').value = employer;
-      document.getElementById('profileJob').value = job;
-
-    });
-
-  };
-
+  // taken from http://www.html5rocks.com/en/tutorials/es6/promises/
   app.spawn = function (generatorFunc) {
     function continuer(verb, arg) {
       var result;
