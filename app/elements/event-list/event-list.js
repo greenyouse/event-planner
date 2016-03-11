@@ -60,6 +60,7 @@
 
     ready: function() {
       var that = this;
+      // NOTE: using a generator funciton here, hence the *()
       app.spawn(function *() {
         var woot = that;
         try {

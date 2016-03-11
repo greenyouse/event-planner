@@ -15,6 +15,7 @@ var $ = require('gulp-load-plugins')();
 var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
+var eslint = require('gulp-eslint');
 var reload = browserSync.reload;
 var merge = require('merge-stream');
 var path = require('path');
@@ -276,6 +277,13 @@ gulp.task('default', ['clean'], function(cb) {
     ['images', 'fonts', 'html'],
     'vulcanize', // 'cache-config',
     cb);
+});
+
+gulp.task('lint', function() {
+  return gulp.src(['app/scripts/app.js', 'app/elements/**/*.js'])
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failOnError());
 });
 
 // Build then deploy to GitHub pages gh-pages branch
