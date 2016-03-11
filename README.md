@@ -29,3 +29,7 @@ And see the results:
 ```sh
 cd dist && python -m SimpleHTTPServer
 ```
+
+
+For the first time through you'll have to create an account (it gets
+saved to IndexedDB for future logins).
