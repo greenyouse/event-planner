@@ -9,13 +9,13 @@ Make sure you have gulp, npm, and bower installed by running this in the
 project's root directory:
 
 ```sh
-npm install -g gulp bower && npm install && bower install
+sudo npm install -g gulp bower
 ```
 
 Then download the npm and bower dependencies:
 
 ```sh
-npm install && bower install
+bower install && npm install 
 ```
 
 Compile the project files:
