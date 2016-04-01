@@ -31,6 +31,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // these pass the form submissions either validate or create an account
     document.getElementById('loginForm').addEventListener('iron-form-submit', app.setCredentials);
     document.getElementById('signupForm').addEventListener('iron-form-submit', app.createAccount);
+
+    // var emails = document.querySelectorAll('input[name=email]');
+    // var i = -1, len = emails.length;
+    // for(; ++i < len;){
+    //   var el = emails[i];
+    //   el.addEventListener('blur', app.validateEmail);
+    // }
+
   });
 
   // Main area's paper-scroll-header-panel custom condensing transformation of
@@ -61,6 +69,58 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
   });
 
+  app._getInputValue = function(el) {
+    return el.target.value;
+  };
+
+  app.validateEmail = function(e, inputEl) {
+    var val = app._getInputValue(e),
+        emailExp = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/g;
+
+    if (!emailExp.exec(val)) {
+      inputEl.setAttribute('error-message', 'Please enter a valid email address');
+      inputEl.setAttribute('invalid', true);
+    } else  {
+      inputEl.removeAttribute('invalid');
+    }
+
+  };
+
+  // TODO: add a password input element that has a checkbox to reveal the password (to prevent input error)
+  app.validatePassword = function(e, inputEl) {
+    var passwd = app._getInputValue(e),
+        passExp = /(?=.*[#@\\.\\!]).*/,
+        errMsg = [];
+
+    if (passwd.length < 8) {
+      errMsg.push('please use 8 or more characters');
+    }
+    if (!passExp.exec(passwd)) {
+      errMsg.push('use one of these characters: # @ . !');
+    }
+
+    if (errMsg.length > 0) {
+      var err = errMsg.join(' and ');
+      inputEl.setAttribute('error-message', err);
+      inputEl.setAttribute('invalid', true);
+    } else {
+      inputEl.removeAttribute('invalid');
+    }
+  };
+
+  app.validateDate = function(e, inputEl) {
+    console.log("validating");
+    var date = app._getInputValue(e),
+        dateExp = /(\d{2}\/\d{2}\/\d{4}||\d{4}-d{2}-d{2})/;
+
+    if (!dateExp.exec(date)) {
+      inputEl.setAttribute('error-message', 'Enter a birthday using mm/dd/yyyy');
+      inputEl.setAttribute('invalid', true);
+    } else {
+      inputEl.removeAttribute('invalid');
+    }
+  };
+
   // used as a default for when to end a new event
   app.hourLater = function() {
     var date = new Date();
@@ -87,11 +147,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   // this takes a date and formats it into a datetime-local string
   app.nowDateTime = function() {
-    return moment().format('YYYY-MM-DDTHH:mm:ss');
+    return moment().format('YYYY-MM-DDTHH:mm');
   };
 
   app.laterDateTime = function() {
-    return moment().add(1, 'hours').format('YYYY-MM-DDTHH:mm:ss');
+    return moment().add(1, 'hours').format('YYYY-MM-DDTHH:mm');
   };
 
   app.nowDate = function() {

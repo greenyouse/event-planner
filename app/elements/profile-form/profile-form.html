@@ -1,19 +1,19 @@
+<link rel="import" href="../datetime-input/datetime-input.html">
+<link rel="import" href="../valid-form/valid-form.html":
+<link rel="import" href="../valid-input/valid-input.html">
+
 <dom-module id="profile-form">
   <template>
     <paper-material elevation="1">
       <h2 class="page-title">Profile</h2>
       <p>Edit your profile info here</p>
-      <form is="iron-form" id="profileForm" method="post" action="/" autocomplete="on">
-        <paper-input id="profileName" name="name" label="name" placeholder="Full Name" value="{{name::input}}"></paper-input>
-        <paper-input id="profilePasswd" name="password" label="password" placeholder="********" type="password" minlength=8 pattern="(?=.*[#@\\.\\!]).*" title="Enter a password with at least 8 characters and one special character: .!@#" value="{{password::input}}"></paper-input>
-        <label for="birthday">birthday <small>(mm/dd/yyyy)</small></label><br>
-        <input id="birthday" name="birthday" type="date" pattern="\d{2}\/\d{2}\/\d{4}" type="text" value="{{birthday::input}}" title="Enter a birthday using mm/dd/yyyy"></input>
+      <valid-form id="profileForm" button="Update Profile">
+        <paper-input id="profileName" name="name" label="name" placeholder="Full Name" value="{{name::input}}" autofocus></paper-input>
+        <valid-input id="profilePasswd" name="password" label="password" placeholder="********" type="password" validator="app.validatePassword" value="{{password::input}}" pattern="(?=.*[#@\\.\\!]).{8}.*"></valid-input>
+        <valid-input id="birthday" name="birthday" label="birthday (mm/dd/yyyy)" type="date" value="{{birthday::input}}" validator="app.validateDate" error-message="Enter a birthday using mm/dd/yyyy" auto-validate></valid-input>
         <paper-input id="profileEmployer" name="employer" label="employer" placeholder="Employer" value="{{employer::input}}"></paper-input>
         <paper-input id="profileJob" name="title" label="job title" placeholder="Job Title" value="{{job::input}}"></paper-input>
-        <br>
-        <br/>
-        <paper-button id="profileSubmit" type="submit" raised>Update Profile</paper-button>
-      </form>
+      </valid-form>
       <paper-toast id="updateToast"></paper-toast>
     </paper-material>
   </template>

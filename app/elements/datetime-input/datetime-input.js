@@ -4,14 +4,24 @@
 
   Polymer ({
     properties: {
-      id: {},
-      name: {},
-      label: {
-        value: "date and time"
+      name: {
+        type: String
       },
-      datetime: {},
-      date: {},
-      time: {}
+      label: {
+        type: String
+      },
+      datetime: {
+        type: String,
+        notify: true
+      },
+      date: {
+        type: String,
+        notify: true
+      },
+      time: {
+        type: String,
+        notify: true
+      }
     },
 
     dateValidator: function(event) {
@@ -44,40 +54,17 @@
     },
 
     // here's a basic datetime input polyfill since no others would work :(
+    // it just the css on the divs depending on the datetime-local support
     ready: function() {
-      var temp = this.$.dtForm;
+      var date;
       if (Modernizr.inputtypes['datetime-local']) {
-        var dt = document.createElement('paper-input');
-        dt.setAttribute('type', 'datetime-local');
-        dt.setAttribute('id', this.id);
-        dt.setAttribute('name', this.name);
-        dt.setAttribute('label', this.label);
-        dt.value = this.datetime;
-        temp.appendChild(dt);
+        date = this.$.dateNative;
+        date.setAttribute('style', "hidden: true");
+        date.setAttribute('data-hidden', true);
       } else {
-        var dl = document.createElement('p'),
-            d = document.createElement('input'),
-            t = document.createElement('input');
-
-        d.setAttribute('name', this.name);
-        d.setAttribute('type', 'text');
-        d.setAttribute('class', 'flexchild');
-        d.setAttribute('placeholder', 'mm/dd/yyyy');
-        d.value = this.date;
-        t.setAttribute('id', this.id);
-        t.setAttribute('name', this.name);
-        t.setAttribute('type', 'text');
-        t.setAttribute('class', 'flexchild');
-        t.setAttribute('placeholder', 'hh:mm am/pm');
-        t.value = this.time;
-        temp.setAttribute('class', 'container flex');
-        dl.textContent = this.label;
-
-        d.addEventListener('blur', this.dateValidator);
-        t.addEventListener('blur', this.timeValidator);
-        temp.appendChild(dl);
-        temp.appendChild(d);
-        temp.appendChild(t);
+        date = this.$.datePolyfill;
+        date.setAttribute('style', "hidden: false");
+        date.setAttribute('data-hidden', false);
       }
     }
   });

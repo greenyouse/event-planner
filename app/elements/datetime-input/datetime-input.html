@@ -1,5 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
 
 <!-- this a weak polyfill for datetime-local inputs
      For unsupported browsers it will be a paper-input with a placeholder and
@@ -9,15 +11,24 @@
   <template>
     <style is="custom-style">
       .flex {
-        @apply(--layout-horizontal);
+      @apply(--layout-horizontal);
+      display: flex;
       }
 
       .flexchild {
-        @apply(--layout-flex);
+      @apply(--layout-flex);
       }
-
     </style>
-    <div id="dtForm">
+
+    <!-- This supports the native datetime-local input -->
+    <div id="dateNative" style="display:none">
+      <paper-input name="[[name]]" type="datetime-local" label="[[label]]" value="{{datetime}}"></paper-input>
+    </div>
+
+    <!-- This is used as a polyfill for datetime inputs -->
+    <div id="datePolyfill" class="container flex" style="display:none">
+      <paper-input class="flexchild" name="[[name]]" placeholder="mm/dd/yyyy" label="[[label]]" value="{{date}}"></paper-input>
+      <paper-input class="flexchild" name="[[name]]" placeholder="hh:mm am/pm" value="{{time}}"></paper-input>
     </div>
   </template>
 

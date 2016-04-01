@@ -30,7 +30,6 @@
       }
 
       localforage.removeItem(uuid, function(err) {
-        // console.log('event removed');
       });
     },
 
@@ -62,7 +61,6 @@
       var that = this;
       // NOTE: using a generator funciton here, hence the *()
       app.spawn(function *() {
-        var woot = that;
         try {
           // get a list of all the keys from the database
           let ks = localforage.keys().then(function(keys) {
@@ -71,7 +69,7 @@
           let keys = yield ks;
 
           // filter down to only event items
-          let eks = keys.filter(woot.filterUUID);
+          let eks = keys.filter(that.filterUUID);
           // fetch each event from the database
           let eventPromises = eks.map(function(k){
             return localforage.getItem(k).then(function(event) {
@@ -83,8 +81,8 @@
             // realize the pending promise
             let event = yield eventPromise;
             // and finally load the event so it gets rendered
-            event = woot.prettifyEvent(event);
-            woot.push('items', event);
+            event = that.prettifyEvent(event);
+            that.push('items', event);
           }
         }
         catch (err) {

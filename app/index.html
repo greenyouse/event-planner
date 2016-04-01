@@ -68,13 +68,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-material id="loginMenu" elevation="5">
           <h3>Log in to Event Meetup</h3>
           <br>
-          <form is="iron-form" id="loginForm" method="post" action="/" autocomplete="on">
-            <paper-input name="email" label="email" placeholder="you@email.com" type="email" autofocus required></paper-input>
-            <paper-input name="password" label="password" placeholder="********" type="password" minlength=8 pattern="(?=.*[#@\\.\\!]).*" title="Enter a password with at least 8 characters and one special character: .!@#" required></paper-input>
-            <br>
-            <br>
-            <paper-button type="submit" role="button" onclick="app.submitHandler('loginForm')" raised>Log In</paper-button>
-          </form>
+          <valid-form id="loginForm" button="Log In">
+            <valid-input name="email" label="email" placeholder="you@email.com" type="email" validator="app.validateEmail" autofocus required></valid-input>
+            <valid-input name="password" label="password" placeholder="********" type="password" validator="app.validatePassword" pattern="(?=.*[#@\\.\\!]).{8}.*" required></valid-input>
+          </valid-form>
           <p>Not a member yet? Click <a href="{{baseUrl}}signup">here</a></p>
           <paper-toast id="loginToast" class="fit-bottom errorToast"></paper-toast>
         </paper-material>
@@ -84,14 +81,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-material id="signupMenu" elevation="5">
           <h3>Create an Event Meetup Account</h3>
           <br/>
-          <form is="iron-form" id="signupForm" method="post" action="/" autocomplete="on">
-            <paper-input name="name" label="name" placeholder="Full Name" autofocus required></paper-input>
-            <paper-input name="email" label="email" placeholder="you@email.com" required></paper-input>
-            <paper-input name="password" label="password" placeholder="********" type="password" minlength=8 pattern="(?=.*[#@\\.\\!]).*" title="Enter a password with at least 8 characters and one special character: .!@#" required></paper-input>
-            <br>
-            <br>
-            <paper-button type="submit" role="button" onclick="app.submitHandler('signupForm')" raised>Create New Account</paper-button>
-          </form>
+          <valid-form id="signupForm" button="Create New Account">
+            <paper-input name="name" label="name" placeholder="Full Name" autofocus></paper-input>
+            <valid-input type="email" name="email" label="email" placeholder="you@email.com" validator="app.validateEmail" required></valid-input>
+            <valid-input type="password" name="password" label="password" placeholder="********" validator="app.validatePassword" type="password" required></valid-input>
+          </valid-form>
         </paper-material>
       </section>
 
@@ -130,10 +124,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
 
           <span class="space"></span>
-
-          <!-- Toolbar icons -->
-          <paper-icon-button icon="refresh"></paper-icon-button>
-          <paper-icon-button icon="search"></paper-icon-button>
 
           <!-- Application name -->
           <div class="middle middle-container">

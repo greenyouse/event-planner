@@ -14,13 +14,7 @@
     },
 
     'listeners': {
-      'profileSubmit.tap': 'submitHandler',
       'profileForm.iron-form-submit': 'updateProfile'
-    },
-
-    submitHandler: function() {
-      var form = this.$.profileForm;
-      form.submit();
     },
 
     updateProfile: function(data) {
@@ -39,8 +33,7 @@
                      title: job};
 
       localforage.setItem(email, profile).then(function(val) {
-        var // toast = this.$.updateToast,
-        toast = document.getElementById('updateToast'),
+        var toast = document.getElementById('updateToast'),
             msg = 'Profile updated successfully';
 
         app.toastMessage(toast, msg, profileForm);
