@@ -109,9 +109,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   app.validateDate = function(e, inputEl) {
-    console.log("validating");
     var date = app._getInputValue(e),
-        dateExp = /(\d{2}\/\d{2}\/\d{4}||\d{4}-d{2}-d{2})/;
+        dateExp = /\d{2,4}\/\d{2}\/\d{2,4}/;
 
     if (!dateExp.exec(date)) {
       inputEl.setAttribute('error-message', 'Enter a birthday using mm/dd/yyyy');
