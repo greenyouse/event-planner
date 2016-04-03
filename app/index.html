@@ -69,7 +69,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <h3>Log in to Event Meetup</h3>
           <br>
           <valid-form id="loginForm" button="Log In">
-            <valid-input name="email" label="email" placeholder="you@email.com" type="email" validator="app.validateEmail" autofocus required></valid-input>
+            <gold-email-input name="email" label="email" placeholder="you@email.com" required autofocus></gold-email-input>
             <password-input name="password" placeholder="********" required></password-input>
           </valid-form>
           <p>Not a member yet? Click <a href="{{baseUrl}}signup">here</a></p>
@@ -83,7 +83,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <br/>
           <valid-form id="signupForm" button="Create New Account">
             <paper-input name="name" label="name" placeholder="Full Name" autofocus></paper-input>
-            <valid-input type="email" name="email" label="email" placeholder="you@email.com" validator="app.validateEmail" required></valid-input>
+            <gold-email-input name="email" label="email" placeholder="you@email.com" auto-validate required></gold-email-input>
             <password-input auto-validate name="password" placeholder="********" required></password-input>
           </valid-form>
         </paper-material>

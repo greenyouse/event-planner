@@ -31,14 +31,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // these pass the form submissions either validate or create an account
     document.getElementById('loginForm').addEventListener('iron-form-submit', app.setCredentials);
     document.getElementById('signupForm').addEventListener('iron-form-submit', app.createAccount);
-
-    // var emails = document.querySelectorAll('input[name=email]');
-    // var i = -1, len = emails.length;
-    // for(; ++i < len;){
-    //   var el = emails[i];
-    //   el.addEventListener('blur', app.validateEmail);
-    // }
-
   });
 
   // Main area's paper-scroll-header-panel custom condensing transformation of
@@ -71,19 +63,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   app._getInputValue = function(el) {
     return el.target.value;
-  };
-
-  app.validateEmail = function(e, inputEl) {
-    var val = app._getInputValue(e),
-        emailExp = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/g;
-
-    if (!emailExp.exec(val)) {
-      inputEl.setAttribute('error-message', 'Please enter a valid email address');
-      inputEl.setAttribute('invalid', true);
-    } else  {
-      inputEl.removeAttribute('invalid');
-    }
-
   };
 
   app.validateDate = function(e, inputEl) {

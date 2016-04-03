@@ -12,7 +12,8 @@
     "modernizr": "^3.3.1",
     "google-apis": "^1.1.5",
     "google-map": "^1.1.10",
-    "moment": "^2.11.2"
+    "moment": "^2.11.2",
+    "gold-email-input": "PolymerElements/gold-email-input#^1.0.7"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
