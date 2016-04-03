@@ -70,7 +70,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <br>
           <valid-form id="loginForm" button="Log In">
             <valid-input name="email" label="email" placeholder="you@email.com" type="email" validator="app.validateEmail" autofocus required></valid-input>
-            <valid-input name="password" label="password" placeholder="********" type="password" validator="app.validatePassword" pattern="(?=.*[#@\\.\\!]).{8}.*" required></valid-input>
+            <password-input name="password" placeholder="********" required></password-input>
           </valid-form>
           <p>Not a member yet? Click <a href="{{baseUrl}}signup">here</a></p>
           <paper-toast id="loginToast" class="fit-bottom errorToast"></paper-toast>
@@ -84,7 +84,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <valid-form id="signupForm" button="Create New Account">
             <paper-input name="name" label="name" placeholder="Full Name" autofocus></paper-input>
             <valid-input type="email" name="email" label="email" placeholder="you@email.com" validator="app.validateEmail" required></valid-input>
-            <valid-input type="password" name="password" label="password" placeholder="********" validator="app.validatePassword" type="password" required></valid-input>
+            <password-input auto-validate name="password" placeholder="********" required></password-input>
           </valid-form>
         </paper-material>
       </section>

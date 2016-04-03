@@ -86,28 +86,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-  // TODO: add a password input element that has a checkbox to reveal the password (to prevent input error)
-  app.validatePassword = function(e, inputEl) {
-    var passwd = app._getInputValue(e),
-        passExp = /(?=.*[#@\\.\\!]).*/,
-        errMsg = [];
-
-    if (passwd.length < 8) {
-      errMsg.push('please use 8 or more characters');
-    }
-    if (!passExp.exec(passwd)) {
-      errMsg.push('use one of these characters: # @ . !');
-    }
-
-    if (errMsg.length > 0) {
-      var err = errMsg.join(' and ');
-      inputEl.setAttribute('error-message', err);
-      inputEl.setAttribute('invalid', true);
-    } else {
-      inputEl.removeAttribute('invalid');
-    }
-  };
-
   app.validateDate = function(e, inputEl) {
     var date = app._getInputValue(e),
         dateExp = /\d{2,4}\/\d{2}\/\d{2,4}/;

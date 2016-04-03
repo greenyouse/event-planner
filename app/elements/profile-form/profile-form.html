@@ -1,6 +1,7 @@
 <link rel="import" href="../datetime-input/datetime-input.html">
 <link rel="import" href="../valid-form/valid-form.html":
 <link rel="import" href="../valid-input/valid-input.html">
+<link rel="import" href="../password-input/password-input.html">
 
 <dom-module id="profile-form">
   <template>
@@ -9,7 +10,7 @@
       <p>Edit your profile info here</p>
       <valid-form id="profileForm" button="Update Profile">
         <paper-input id="profileName" name="name" label="name" placeholder="Full Name" value="{{name::input}}" autofocus></paper-input>
-        <valid-input id="profilePasswd" name="password" label="password" placeholder="********" type="password" validator="app.validatePassword" value="{{password::input}}" pattern="(?=.*[#@\\.\\!]).{8}.*"></valid-input>
+        <password-input name="password" placeholder="********"></password-input>
         <valid-input id="birthday" name="birthday" label="birthday (mm/dd/yyyy)" type="date" value="{{birthday::input}}" validator="app.validateDate" error-message="Enter a birthday using mm/dd/yyyy" auto-validate></valid-input>
         <paper-input id="profileEmployer" name="employer" label="employer" placeholder="Employer" value="{{employer::input}}"></paper-input>
         <paper-input id="profileJob" name="title" label="job title" placeholder="Job Title" value="{{job::input}}"></paper-input>
