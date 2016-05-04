@@ -21027,7 +21027,9 @@ module.exports = Array.isArray || function (arr) {
 
     // add #! before urls
     page({
-      hashbang: true
+      // FIXME: having problems setting this in production...
+      hashbang: true,
+      base: app.baseUrl
     });
 
   });
