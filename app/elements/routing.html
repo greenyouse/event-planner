@@ -42,15 +42,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     function loadEvent(ctx, next) {
       var uuid = ctx.params.id;
       localforage.getItem(uuid, function(err, event) {
-        ctx.params.name = event.name;
+        ctx.params.name = event.name,
         ctx.params.host = event.host,
         ctx.params.type = event.type,
-        ctx.params.startDateTime = event.start,
-        ctx.params.startDate = moment(event.start, "YYYY-MM-DDTHH:mm:ss").format("MM/DD/YYYY"),
-        ctx.params.startTime = moment(event.start, "YYYY-MM-DDTHH:mm:ss").format("hh:mm a"),
-        ctx.params.endDateTime = event.end;
-        ctx.params.endDate = moment(event.end, "YYYY-MM-DDTHH:mm:ss").format("MM/DD/YYYY"),
-        ctx.params.endTime = moment(event.end, "YYYY-MM-DDTHH:mm:ss").format("hh:mm a"),
+        ctx.params.start = event.start,
+        ctx.params.end = event.end;
         ctx.params.guests = event.guests,
         ctx.params.address = event.address,
         ctx.params.details = event.details,
@@ -64,20 +60,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var email = app.getCredentials();
 
       localforage.getItem(email).then(function(acct) {
-          var name = acct.name || "",
-              passwd = acct.password,
-              bday = acct.birthday || "",
-              employer = acct.employer || "",
-              job = acct.title || "";
+        var name = acct.name || "",
+            passwd = acct.password,
+            bday = acct.birthday || "",
+            employer = acct.employer || "",
+            job = acct.job || "";
 
-          ctx.params.email = email;
-          ctx.params.name = name;
-          ctx.params.profilePasswd = passwd;
-          ctx.params.birthday = bday;
-          ctx.params.profileEmployer = employer;
-          ctx.params.profileJob = job;
+        ctx.params.email = email;
+        ctx.params.name = name;
+        ctx.params.password = passwd;
+        ctx.params.birthday = bday;
+        ctx.params.employer = employer;
+        ctx.params.job = job;
 
-          next();
+        next();
       });
     };
 

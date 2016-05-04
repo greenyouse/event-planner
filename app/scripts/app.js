@@ -77,52 +77,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   };
 
-  // used as a default for when to end a new event
-  app.hourLater = function() {
-    var date = new Date();
-
-    date.setHours(date.getHours() + 1);
-    return date.toLocaleDateString();
-  };
-
-  // used as default for start of new event
-  app.today = function() {
-    var date = new Date();
-
-    return date.toLocaleDateString();
-  };
-
-  // returns a datetime string for the given date (used for datetime inputs)
-  app.datetime = function(date) {
-    var d = date.split("/").reverse().join("-"),
-        t = date.toLocaleTimeString().split(":").slice(0,2).join(":");
-
-    return d + "T" + t;
-  };
-
-
-  // this takes a date and formats it into a datetime-local string
-  app.nowDateTime = function() {
-    return moment().format('YYYY-MM-DDTHH:mm');
-  };
-
-  app.laterDateTime = function() {
-    return moment().add(1, 'hours').format('YYYY-MM-DDTHH:mm');
-  };
-
-  app.nowDate = function() {
-    return moment().format("MM/DD/YYYY");
-  };
-
-  app.nowTime = function() {
-    return moment().format("hh:mm a");
-  };
-
-  app.laterTime = function() {
-    return moment().add(1, 'hours').format("hh:mm a");
-  };
-
-
   app.toastMessage = function(toast, msg, into) {
     toast.text = msg;
     toast.fitInto = into;
@@ -162,7 +116,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     var email = value.detail.email,
         passwd = value.detail.password;
 
-    function invalidPasswd  () {
+    function invalidPasswd() {
       var toast = app.$.loginToast,
           msg = 'Email and password combination invalid';
       app.toastMessage(toast, msg, loginMenu);

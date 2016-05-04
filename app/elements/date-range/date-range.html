@@ -2,17 +2,25 @@
 <link rel="import" href="../../bower_components/iron-input/iron-input.html">
 <link rel="import" href="../../bower_components/iron-form-element-behavior/iron-form-element-behavior.html">
 <link rel="import" href="../../bower_components/iron-validatable-behavior/iron-validatable-behavior.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input-container.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input-error.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../datetime-input/datetime-input.html">
 
 <dom-module id="date-range">
   <template>
-    <datetime-input inputId="startDate" name="startDate" label="start date" datetime="{{startDateTime}}" date="{{startDate}}" time="{{startTime}}" required></datetime-input>
-    <datetime-input id="end" inputId="endDate" name="endDate" label="end date" datetime="{{endDateTime}}" date="{{endDate}}" time="{{endTime}}" required></datetime-input>
-  </template>
+    <datetime-input id="start"
+                    name="startDate"
+                    label="start date"
+                    datetime="{{startDate}}"
+                    required></datetime-input>
 
+    <datetime-input id="end"
+                    inputId="endDate"
+                    name="endDate"
+                    label="end date"
+                    datetime="{{endDate}}"
+                    errorMessage="{{endErrorMessage}}"
+                    required></datetime-input>
+
+  </template>
 </dom-module>
 <script>
  (function() {
@@ -27,98 +35,81 @@
      ],
 
      properties: {
-       startDateTime: {
-         value: function() {
-           return app.nowDateTime();
-         },
-         notify: true
+       name: {
+         type: String,
+         value: 'date-range'
        },
+
+       value: {
+         type: Array,
+         value: function() {
+           return [this.startDate, this.endDate];
+         }
+       },
+
        startDate: {
+         type: String,
          value: function() {
-           return app.nowDate();
+           return moment().format('YYYY-MM-DDTHH:mm');
          },
          notify: true
        },
-       startTime: {
-         value: function() {
-           return app.nowTime();
-         },
-         notify: true
-       },
-       endDateTime: {
-         value: function() {
-           return app.laterDateTime();
-         },
-         notify: true
-       },
+
        endDate: {
-         value: function() {
-           return app.nowDate();
-         },
-         notify: true
-       },
-       endTime: {
-         value: function() {
-           return app.laterTime();
-         },
-         notify: true
-       },
-       start: {
          type: String,
          value: function() {
-           return app.nowDateTime();
+           return moment().add(1, 'hours').format('YYYY-MM-DDTHH:mm');
          },
          notify: true
        },
-       end: {
+
+       /**
+        * Used for setting the error message for daterange, it gets inherited by the
+        * ending datetime-local input.
+        */
+       endErrorMessage: {
          type: String,
-         value: function() {
-           return app.laterDateTime();
-         },
-         notify: true
+         value: "Please provide a full date"
        }
      },
 
      listeners: {
+       'start.change': '_getValidity',
        'end.change': '_getValidity'
      },
 
-     dateSupported: function() {
-       return Modernizr.inputtypes['datetime-local'];
-     },
-
-     // normalizes the dates to the datetime-local format
-     normalizeDate: function(date, time) {
-       date = moment(date, "MM/DD/YYYY").format("YYYY-MM-DD");
-       time = moment(time, "hh:mm a").format("HH:mm:ss");
-       return date + "T" + time;
-     },
-
      _getValidity: function() {
-       this.start = this.dateSupported() ? this.startDateTime : this.normalizeDate(this.startDate, this.startTime),
-       this.end = this.dateSupported() ? this.endDateTime : this.normalizeDate(this.endDate, this.endTime);
 
-       var diff = diff = moment(this.start).diff(this.end);
+       var valid = true,
+           startCheck = moment(this.startDate, 'YYYY-MM-DDTHH:mm').isValid(),
+           endCheck = moment(this.endDate, 'YYYY-MM-DDTHH:mm').isValid();
 
-       // get every date input (there can be datetime-local or date and time)
-       var children = this.$.end.children;
-       var endEl;
-       for (var i = 0; i < children.length; i++) {
-         if (children[i].dataset.hidden) {
-           endEl = children[i].children[0];
-         }
-       }
-
-       if (diff >= 0) {
-         endEl.setAttribute('error-message', "start date must be before end date");
-         endEl.setAttribute('invalid', true);
-         return false;
+       /**
+        * If either don't have valid date inputs show the datetime-input error message,
+        * not a date-range error message.
+        */
+       if (!startCheck || !endCheck) {
+         // at least one datetime-local input wasn't completed, block sending the form
+         valid = false;
        } else {
-         endEl.removeAttribute('invalid');
-         return true;
+
+         // otherwise check that the end date is after start date
+         var diff = moment(this.startDate).diff(this.endDate);
+
+         if (diff >= 0) {
+           this.$.end.errorMessage = "end date must be after start date";
+           this.$.end.invalid = true;
+           valid = false;
+         } else {
+           // reset the error message if everything is ok
+           this.$.end.errorMessage = "Please provide a full date",
+           this.$.end.invalid = false;
+         }
+
+         this.invalid = !valid;
+         return valid;
        }
      }
-
    })
  })();
 </script>

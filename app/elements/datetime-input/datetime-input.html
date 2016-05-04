@@ -1,37 +1,149 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-styles/typography.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-form-element-behavior/iron-form-element-behavior.html">
 <link rel="import" href="../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../bower_components/iron-validatable-behavior/iron-validatable-behavior.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-error.html">
+<link rel="import" href="datetime-polyfill.html">
 
 <!-- this a weak polyfill for datetime-local inputs
-     For unsupported browsers it will be a paper-input with a placeholder and
-     validator for the datetime.
-  -->
+     For unsupported browsers there is a calendar popup and extra validation
+     to ensure the given datetime is valid.
+   -->
+
 <dom-module id="datetime-input">
   <template>
-    <style is="custom-style">
-      .flex {
-      @apply(--layout-horizontal);
-      display: flex;
-      }
-
-      .flexchild {
-      @apply(--layout-flex);
-      }
-    </style>
 
     <!-- This supports the native datetime-local input -->
-    <div id="dateNative" style="display:none">
-      <paper-input name="[[name]]" type="datetime-local" label="[[label]]" value="{{datetime}}"></paper-input>
-    </div>
+    <paper-input-container id="nativeContainer"
+                           hidden$="[[polyfill]]"
+                           no-label-float="[[noLabelFloat]]"
+                           invalid="[[invalid]]"
+                           always-float-label>
+
+      <label hidden$="[[!label]]">[[label]]</label>
+
+      <input is="iron-input"
+             class="paper-input-input"
+             type="datetime-local"
+             id="datetime"
+             required$="[[required]]"
+             disabled$="[[disabled]]"
+             aria-labelledby$="[[_ariaLabelledBy]]"
+             aria-describedby$="[[_ariaDescribedBy]]"
+             bind-value="{{datetime}}"
+             name$="[[name]]"
+             autofocus$="[[autofocus]]"
+             inputmode$="[[inputmode]]"
+             inavlid="[[invalid]]"
+             readonly$="[[readonly]]">
+
+      <paper-input-error>[[errorMessage]]</paper-input-error>
+    </paper-input-container>
 
     <!-- This is used as a polyfill for datetime inputs -->
-    <div id="datePolyfill" class="container flex" style="display:none">
-      <paper-input class="flexchild" name="[[name]]" placeholder="mm/dd/yyyy" label="[[label]]" value="{{date}}"></paper-input>
-      <paper-input class="flexchild" name="[[name]]" placeholder="hh:mm am/pm" value="{{time}}"></paper-input>
-    </div>
+    <paper-input-container id="polyfillContainer"
+                           hidden$="[[!polyfill]]"
+                           no-label-float="[[noLabelFloat]]"
+                           invalid="[[invalid]]"
+                           always-float-label>
+
+      <label hidden$="[[!label]]">[[label]]</label>
+
+      <datetime-polyfill class="paper-input-input"
+                         id="datePolyfill"
+                         datetime="{{datetime}}"
+                         invalid="[[invalid]]"
+                         required$="[[required]]"></datetime-polyfill>
+
+      <paper-input-error>[[errorMessage]]</paper-input-error>
+    </paper-input-container>
   </template>
-
-  <script src="datetime-input.js"></script>
-
 </dom-module>
+<script>
+ (function() {
+
+  'use strict';
+
+  Polymer ({
+    is: 'datetime-input',
+
+    behaviors: [
+      /* not used for daterange
+      Polymer.IronFormElementBehavior, */
+      Polymer.IronValidatableBehavior
+    ],
+
+    properties: {
+      name: {
+        type: String,
+        value: 'datetime-input'
+      },
+
+      errorMessage: {
+        type: String,
+        value: "Please provide a full date"
+      },
+
+      /**
+       * The input label
+       */
+      label: {
+        type: String
+      },
+
+      /**
+       * The datetime value
+       */
+      datetime: {
+        type: String,
+        notify: true,
+      },
+
+      /**
+       * This directs whether a polyfill is needed for a browser
+       */
+      polyfill: {
+        type: Boolean,
+        value: function() {
+          return this._setPolyfill();
+        }
+      }
+    },
+
+    listeners: {
+      'datetime.change': '_getValidity',
+      'datePolyfill.change': '_getValidity'
+    },
+
+    /**
+     * Check that the datetime matches the expected datetime format. If any of the datetime input
+     * was blank, this will fail.
+     */
+    _getValidity: function() {
+      var datetime = this.datetime,
+          valid = true;
+
+      var dateCheck = moment(datetime, 'YYYY-MM-DDTHH:mm').isValid();
+
+      if (dateCheck == false) {
+        valid = false
+      }
+
+      this.invalid = !valid;
+      return valid;
+    },
+
+    // check the browser to see if datetime-local is supported
+    _setPolyfill: function() {
+      if (Modernizr.inputtypes['datetime-local']) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+  });
+})();
+</script>

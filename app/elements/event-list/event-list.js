@@ -59,7 +59,7 @@
 
     ready: function() {
       var that = this;
-      // NOTE: using a generator funciton here, hence the *()
+      // NOTE: using a generator function here, hence the *()
       app.spawn(function *() {
         try {
           // get a list of all the keys from the database

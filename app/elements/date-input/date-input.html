@@ -1,0 +1,72 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../bower_components/iron-form-element-behavior/iron-form-element-behavior.html">
+<link rel="import" href="../../bower_components/iron-validatable-behavior/iron-validatable-behavior.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-error.html">
+<!-- <link rel="import" href="../../bower_components/paper-input/paper-input-behavior.html"
+   -->
+
+<!-- This is a polyfill for date inputs
+     The unsupported browsers will get a calendar popup for the date selection.
+   -->
+
+<dom-module id="date-input">
+  <template>
+    <paper-input-container id="nativeContainer"
+                           no-label-float="[[noLabelFloat]]"
+                           invalid="[[invalid]]"
+                           always-float-label>
+
+      <label hidden$="[[!label]]">[[label]]</label>
+
+      <input is="iron-input"
+             type="date"
+             class="paper-input-input"
+             pattern="[0-9]"
+             data-format="MM/dd/yyyy"
+             id="input"
+             required$="[[required]]"
+             disabled$="[[disabled]]"
+             aria-labelledby$="[[_ariaLabelledBy]]"
+             aria-describedby$="[[_ariaDescribedBy]]"
+             bind-value="{{value}}"
+             name$="[[name]]"
+             autofocus$="[[autofocus]]"
+             inputmode$="[[inputmode]]"
+             inavlid="[[invalid]]"
+             auto-validate="[[auto-validate]]">
+
+    </paper-input-container>
+  </template>
+</dom-module>
+<script>
+ (function() {
+   'use-strict';
+
+   Polymer ({
+     is: 'date-input',
+
+     behaviors: [
+       Polymer.PaperInputBehavior,
+       Polymer.IronFormElementBehavior
+     ],
+
+     listeners: {
+       'input.change': 'setDate'
+     },
+
+     // this sets the new date manually since data binding doesn't work with the polyfill :(
+     setDate: function(e) {
+       this.value = e.target.value;
+     }
+
+   });
+ })();
+</script>
+
+<!--  Required deps for the better-dateinput-polyfill -->
+<script src="../../bower_components/better-dom/dist/better-dom.js"></script>
+<script src="../../bower_components/better-i18n-plugin/dist/better-i18n-plugin.js"></script>
+<script src="../../bower_components/better-dateinput-polyfill/dist/better-dateinput-polyfill.js"></script>

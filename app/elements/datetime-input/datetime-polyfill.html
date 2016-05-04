@@ -1,0 +1,185 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
+
+<dom-module id="datetime-polyfill">
+  <template>
+    <style>
+     input {
+         font: inherit;
+         outline: none;
+         box-shadow: none;
+         border: none;
+     }
+
+     .container {
+         display: flex;
+         flex-direction: row;
+     }
+
+    </style>
+
+    <div id="datetime" class="container">
+
+      <!-- This date polyfill isn't compatible with iron-input so
+           I'm setting up a listener for taps instead. -->
+      <input is="iron-input"
+             type="date"
+             id="date"
+             data-format="MM/dd/yyyy"
+             style="text-align: center; max-width: 50%;"
+             required$="[[required]]"
+             aria-label="date">
+
+      <!-- Using styles on the iron-inputs doesn't work easily so I'm inlining them here -->
+      <input is="iron-input"
+             id="hour"
+             placeholder="hour"
+             maxlength="2"
+             allowed-pattern="[0-9]"
+             bind-value="{{hour::input}}"
+             style="text-align: center; max-width: 10%;"
+             required$="[[required]]"
+             aria-label="hour">
+      :
+
+      <input is="iron-input"
+             id="minute"
+             placeholder="minute"
+             maxlength="2"
+             minlength="2"
+             allowed-pattern="[0-9]"
+             size="2"
+             bind-value="{{minute::input}}"
+             style="text-align: center; max-width: 10%;"
+             required$="[[required]]"
+             aria-label="minute">
+      ,
+
+      <!-- works anywhere in the input for convenience, all others are numeric inputs-->
+      <iron-a11y-keys id="periodKeys" target="[[target]]" keys="a p"
+                      on-keys-pressed="fillPeriod"></iron-a11y-keys>
+      <input is="iron-input"
+             id="period"
+             placeholder="am/pm"
+             maxlength="2"
+             allowed-pattern="[ampAMP]"
+             size="2"
+             bind-value="{{period::input}}"
+             style="text-align: center; max-width: 15%; padding-left: 5px;"
+             required$="[[required]]"
+             aria-label="am/pm">
+    </div>
+  </template>
+</dom-module>
+<script>
+ (function(){
+   'use-strict';
+
+   Polymer({
+     is: 'datetime-polyfill',
+
+     properties: {
+       /**
+        * The datetime value
+        */
+       datetime: {
+         type: String,
+         notify: true
+       },
+
+       /**
+        * The date input
+        */
+       date: {
+         type: String,
+         notify: true
+       },
+
+       /**
+        * inputs for hour, minute, and period
+        */
+       hour: {
+         type: String,
+         notify: true
+       },
+
+       minute: {
+         type: String,
+         notify: true
+       },
+
+       period: {
+         type: String,
+         notify: true
+       }
+     },
+
+     listeners: {
+       'date.change': 'setDate',
+     },
+
+     observers: [
+       'computeDateTime(date, hour, minute, period)',
+       'setTime(datetime)'
+     ],
+
+     log: function(obj) {
+       console.log(obj);
+     },
+
+     // sets the initial date and time values
+     setTime: function() {
+       var datetime = this.datetime;
+
+       /* NOTE: There is a nasty race condition when loading the event details and
+          binding them to the properties here. The page.js calls the clientside storage
+          asynchronously but the component loads synchronously, so the properties end up
+          with the default datetime instead of the correct one. Setting the dates like
+          this ensures the date, hour, minute, and period stay in sync with the datetime
+          property. */
+       this.$.date.value = moment(datetime, 'YYYY-MM-DDTHH:mm').format('YYYY-MM-DD');
+       this.$.hour.value = moment(datetime, 'YYYY-MM-DDTHH:mm').format('HH');
+       this.$.minute.value = moment(datetime, 'YYYY-MM-DDTHH:mm').format('mm');
+       this.$.period.value = moment(datetime, 'YYYY-MM-DDTHH:mm').format('a');
+
+       // sets the date value when initializing, the external library interrupts polymer's data-binding
+       this.$.date.value = this.date;
+     },
+
+     // this sets the new date manually since data binding doesn't work with the polyfill :(
+     setDate: function(e) {
+       this.date = e.target.value;
+     },
+
+     fillPeriod: function(e) {
+       var key = e.detail.keyboardEvent.key;
+       if (key == "a") {
+         this.period = "am";
+       } else {
+         this.period = "pm";
+       }
+     },
+
+     /**
+      * Check the datetime here and if any part of the datetime is not filled out, set the
+      * datetime to an empty string to make the validation fail. Otherwise moment.js will assume
+      * 00 was given for the date input.
+      */
+     computeDateTime: function(date, hour, minute, period) {
+       if (!this.date || !this.hour || !this.minute || !this.period) {
+         this.datetime = '';
+       }
+
+       var timeStr = date + "T" + hour + ":" + minute + period;
+
+       // this normalizes the date so it's in 24 hr format to comply with datetime-local
+       this.datetime = moment(timeStr, 'YYYY-MM-DDTHH:mma').format('YYYY-MM-DDTHH:mm');
+     }
+   });
+ })();
+</script>
+
+<!--  Required deps for the better-dateinput-polyfill -->
+<script src="../../bower_components/better-dom/dist/better-dom.js"></script>
+<script src="../../bower_components/better-i18n-plugin/dist/better-i18n-plugin.js"></script>
+<script src="../../bower_components/better-dateinput-polyfill/dist/better-dateinput-polyfill.js"></script>

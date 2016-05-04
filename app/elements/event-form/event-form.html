@@ -1,6 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../date-range/date-range.html">
 <link rel="import" href="../valid-form/valid-form.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
 
 <!-- Here's a widget for editing event info. It displays all the relevant event
      information in a paper card form -->
@@ -8,13 +10,13 @@
 
   <template>
     <paper-material elevation="1">
-      <h2 class="page-title">{{name}}</h2>
+      <h2 class="page-title">{{eventName}}</h2>
       <p>Make a new event</p>
       <valid-form is="iron-form" id="eventForm" button="Add Event">
-        <paper-input name="name" label="event name" placeholder="Event Name" value="{{name::input}}" required autofocus></paper-input>
-        <paper-input name="host" label="event host" placeholder="Host's Name" value="{{host::input}}" required></paper-input>
-        <paper-input name="type" label="event type" placeholder="Event Type" value="{{type::input}}" required></paper-input>
-        <date-range start="{{start}}" end="{{end}}"></date-range>
+        <paper-input label="event name" placeholder="Event Name" value="{{eventName::input}}" required autofocus></paper-input>
+        <paper-input label="event host" placeholder="Host's Name" value="{{host::input}}" required></paper-input>
+        <paper-input label="event type" placeholder="Event Type" value="{{type::input}}" required></paper-input>
+        <date-range start-date="{{start}}" end-date="{{end}}" required></date-range>
         <input-list name="guests" items="{{guests}}" required></input-list>
         <places-input value="{{address}}" required></places-input>
         <paper-input id="details" label="details" name="details" placeholder="Event Details" value="{{details}}"></paper-input>
@@ -31,8 +33,8 @@
      is: 'event-form',
 
      properties: {
-       name: {
-         value: 'New Event',
+       eventName: {
+         type: String,
          notify: true
        },
 
@@ -40,26 +42,32 @@
          type: String,
          notify: true
        },
+
        type: {
          type: String,
          notify: true
        },
+
        start: {
          type: String,
          notify: true
        },
+
        end: {
          type: String,
          notify: true
        },
+
        guests: {
          type: Array,
          notify: true
        },
+
        address: {
          type: String,
          notify: true
        },
+
        details: {
          type: String,
          notify: true
@@ -70,19 +78,11 @@
        'eventForm.iron-form-submit': 'saveEvent'
      },
 
-     dateSupported: function() {
-       return Modernizr.inputtypes['datetime-local'];
-     },
-
-     submitHandler: function() {
-       var form = this.$.eventForm;
-       form.submit();
-     },
-
      // saves new events using UUIDs for uniqueness
      // TODO: could rely on Polymer properties here intead of using HTML forms...
      saveEvent: function(data) {
-       var name = this.name,
+
+       var name = this.eventName,
            host = this.host,
            type = this.type,
            start = this.start,
@@ -92,15 +92,17 @@
            details = this.details,
            uuid = this.uuid || String(app.uuid());
 
-       var event = {name: name,
-                    host: host,
-                    type: type,
-                    start: start,
-                    end: end,
-                    guests: guests,
-                    address: address,
-                    details: details,
-                    uuid: uuid};
+       var event = {
+         name: name,
+         host: host,
+         type: type,
+         start: start,
+         end: end,
+         guests: guests,
+         address: address,
+         details: details,
+         uuid: uuid
+       };
 
        var that = this;
        localforage.setItem(uuid, event).then(function(){
