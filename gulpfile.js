@@ -25,8 +25,7 @@ var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
 var ensureFiles = require('./tasks/ensure-files.js');
-
-// var ghPages = require('gulp-gh-pages');
+var ghPages = require('gulp-gh-pages');
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -297,13 +296,7 @@ gulp.task('build-deploy-gh-pages', function(cb) {
 // Deploy to GitHub pages gh-pages branch
 gulp.task('deploy-gh-pages', function() {
   return gulp.src(dist('**/*'))
-    // Check if running task from Travis CI, if so run using GH_TOKEN
-    // otherwise run using ghPages defaults.
-    .pipe($.if(process.env.TRAVIS === 'true', $.ghPages({
-      remoteUrl: 'https://$GH_TOKEN@github.com/polymerelements/polymer-starter-kit.git',
-      silent: true,
-      branch: 'gh-pages'
-    }), $.ghPages()));
+    .pipe(ghPages());
 });
 
 // Load tasks for web-component-tester
