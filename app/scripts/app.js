@@ -12,12 +12,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   var app = document.querySelector('#app');
 
-  // Sets app default base URL
+  // Sets app default base URL for development
   app.baseUrl = '/';
-  if (window.location.port === '') {  // if production
-    // Uncomment app.baseURL below and
-    // set app.baseURL to '/your-pathname/' if running from folder in production
-    // app.baseUrl = '/event-planner/';
+
+  // for production mode
+  if (window.location.hostname == 'greenyouse.github.io') {
+    app.baseUrl = '/event-planner/';
   }
 
   app.displayInstalledToast = function() {
