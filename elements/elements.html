@@ -20919,11 +20919,6 @@ module.exports = Array.isArray || function (arr) {
     // client-side router inspired by the Express router
     // More info: https://visionmedia.github.io/page.js/
 
-    // Removes end / from app.baseUrl which page.base requires for production
-    if (window.location.port === '') {  // if production
-      page.base(app.baseUrl.replace(/\/$/, ''));
-    }
-
     // Middleware
     function scrollToTop(ctx, next) {
       app.scrollPageToTop();
@@ -21032,6 +21027,7 @@ module.exports = Array.isArray || function (arr) {
 
     // add #! before urls
     page({
+      hashbang: true
     });
 
   });
