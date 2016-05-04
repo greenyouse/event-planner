@@ -20920,7 +20920,7 @@ module.exports = Array.isArray || function (arr) {
     // More info: https://visionmedia.github.io/page.js/
 
     // Removes end / from app.baseUrl which page.base requires for production
-    if (window.location.port === '') {  // if production
+    if (window.location.port === '5000') {  // if production
       page.base(app.baseUrl.replace(/\/$/, ''));
     }
 
