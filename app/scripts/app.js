@@ -14,10 +14,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   // Sets app default base URL for development
   app.baseUrl = '/';
+  app.menuUrl = app.baseUrl;
 
   // for production mode
-  if (window.location.hostname == 'greenyouse.github.io') {
+  if (window.location.port === '') {
     app.baseUrl = '/event-planner/';
+
+    // force menu links to pick up the hasbang
+    app.menuUrl = '/event-planner/#!/';
   }
 
   app.displayInstalledToast = function() {

@@ -62,7 +62,7 @@
             <gold-email-input name="email" label="email" placeholder="you@email.com" error-message="Enter a valid email address" required autofocus></gold-email-input>
             <password-input name="password" placeholder="********" required></password-input>
           </valid-form>
-          <p>Not a member yet? Click <a href="{{baseUrl}}signup">here</a></p>
+          <p>Not a member yet? Click <a href="{{menuUrl}}signup">here</a></p>
           <paper-toast id="loginToast" class="fit-bottom errorToast"></paper-toast>
         </paper-material>
       </section>
@@ -90,17 +90,17 @@
 
         <!-- Drawer Content -->
         <paper-menu attr-for-selected="data-route" selected="[[route]]">
-          <a data-route="events" href="{{baseUrl}}">
+          <a data-route="events" href="{{menuUrl}}">
             <iron-icon icon="event"></iron-icon>
             <span>Events</span>
           </a>
 
-          <a data-route="new-event" href="{{baseUrl}}new-event">
+          <a data-route="new-event" href="{{menuUrl}}new-event">
             <iron-icon icon="add"></iron-icon>
             <span>New Event</span>
           </a>
 
-          <a data-route="profile" href="{{baseUrl}}profile">
+          <a data-route="profile" href="{{menuUrl}}profile">
             <iron-icon icon="info"></iron-icon>
             <span>Profile</span>
           </a>
