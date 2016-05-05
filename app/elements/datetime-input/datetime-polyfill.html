@@ -117,8 +117,8 @@
      listeners: {
        'date.change': 'setDate',
        'hour.change': 'setHour',
-       'hour.minute': 'setMinute',
-       'hour.period': 'setPeriod'
+       'minute.change': 'setMinute',
+       'period.change': 'setPeriod'
      },
 
      observers: [
@@ -134,17 +134,29 @@
        }
      },
 
+     // make sure midnight is 12am not 00am
+     normalizeMidnight: function(hour) {
+       if (hour == '00')
+         hour = '12';
+       return hour;
+     },
+
      // sets the initial date and time values
      setTime: function() {
-       var datetime = this.datetime;
+       // make sure we're not setting an invalid datetime
+       if (this.datetime !== '') {
+         var datetime = this.datetime;
 
-       this.date = moment(datetime, 'YYYY-MM-DDTHH:mm').format('YYYY-MM-DD');
-       this.hour = moment(datetime, 'YYYY-MM-DDTHH:mm').format('HH');
-       this.minute = moment(datetime, 'YYYY-MM-DDTHH:mm').format('mm');
-       this.period = moment(datetime, 'YYYY-MM-DDTHH:mm').format('a');
+         this.date = moment(datetime, 'YYYY-MM-DDTHH:mm').format('YYYY-MM-DD');
+         hour = moment(datetime, 'YYYY-MM-DDTHH:mm').format('HH');
+         this.minute = moment(datetime, 'YYYY-MM-DDTHH:mm').format('mm');
+         this.period = moment(datetime, 'YYYY-MM-DDTHH:mm').format('a');
 
-       // make sure the date input gets loaded
-       this.$.date.value = this.date;
+         this.hour = this.normalizeMidnight(hour);
+
+         // make sure the date input gets loaded
+         this.$.date.value = this.date;
+       }
      },
 
      /* NOTE: There is a nasty race condition when loading the event details and
@@ -160,17 +172,18 @@
        this.computeDateTime(this.date, this.hour, this.minute, this.period);
      },
 
-     setDate: function(e) {
-       this.hour = e.target.value;
+     setHour: function(e) {
+       hour = e.target.value;
+       this.hour = this.normalizeMidnight(hour);
        this.computeDateTime(this.date, this.hour, this.minute, this.period);
      },
 
-     setDate: function(e) {
+     setMinute: function(e) {
        this.minute = e.target.value;
        this.computeDateTime(this.date, this.hour, this.minute, this.period);
      },
 
-     setHour: function(e) {
+     setPeriod: function(e) {
        this.period = e.target.value;
        this.computeDateTime(this.date, this.hour, this.minute, this.period);
      },
@@ -183,12 +196,13 @@
      computeDateTime: function(date, hour, minute, period) {
        if (!this.date || !this.hour || !this.minute || !this.period) {
          this.datetime = '';
+       } else {
+
+         var timeStr = date + "T" + hour + ":" + minute + period;
+
+         // this normalizes the date so it's in 24 hr format to comply with datetime-local
+         this.datetime = moment(timeStr, 'YYYY-MM-DDTHH:mma').format('YYYY-MM-DDTHH:mm');
        }
-
-       var timeStr = date + "T" + hour + ":" + minute + period;
-
-       // this normalizes the date so it's in 24 hr format to comply with datetime-local
-       this.datetime = moment(timeStr, 'YYYY-MM-DDTHH:mma').format('YYYY-MM-DDTHH:mm');
      }
    });
  })();
