@@ -59,7 +59,7 @@
           <h3>Log in to Event Meetup</h3>
           <br>
           <valid-form id="loginForm" button="Log In">
-            <gold-email-input id="loginName" name="email" label="email" placeholder="you@email.com" error-message="Enter a valid email address" required autofocus auto-validate></gold-email-input>
+            <gold-email-input id="loginName" name="email" label="email" placeholder="you@email.com" regex="^.+@.+\..{2,}$" error-message="Enter a valid email address" required autofocus auto-validate></gold-email-input>
             <password-input name="password" placeholder="********" required></password-input>
           </valid-form>
           <p>Not a member yet? Click <a href="{{menuUrl}}signup">here</a></p>
@@ -73,7 +73,7 @@
           <br/>
           <valid-form id="signupForm" button="Create New Account">
             <paper-input id="signupName" name="name" label="name" placeholder="Full Name" autofocus></paper-input>
-            <gold-email-input name="email" label="email" placeholder="you@email.com" error-message="Enter a valid email address" auto-validate required></gold-email-input>
+            <gold-email-input name="email" label="email" placeholder="you@email.com" regex="^.+@.+\..{2,}$" error-message="Enter a valid email address" auto-validate required></gold-email-input>
             <password-input name="password" placeholder="********" auto-validate required></password-input>
           </valid-form>
         </paper-material>
