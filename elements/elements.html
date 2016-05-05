@@ -20981,6 +20981,16 @@ module.exports = Array.isArray || function (arr) {
       });
     };
 
+    /**
+     * This sets the focus for form elements. Since this is a SPA, it doesn't reload the page
+     * and it has multiple forms that need autofocus. Seems like a reasonable work-around.
+     */
+    function setFocus(id) {
+      var el = document.getElementById(id);
+
+      el.focus();
+    }
+
     // Routes
     page('/*', scrollToTop, closeDrawer, function(ctx, next) {
       next();
@@ -20999,6 +21009,8 @@ module.exports = Array.isArray || function (arr) {
     page('/new-event', withProfile, function() {
       app.menu = 'app';
       app.route = 'new-event';
+
+      setFocus('eventName');
     });
 
     page('/event/:id', withProfile, loadEvent, function(ctx) {
@@ -21012,16 +21024,22 @@ module.exports = Array.isArray || function (arr) {
       app.menu = 'app';
       app.route = 'profile';
       app.params = ctx.params;
+
+      setFocus('profileName');
     });
 
     page('/login', function() {
       app.menu = 'login';
       app.route = 'login';
+
+      setFocus('loginName');
     });
 
     page('/signup', function() {
       app.menu = 'signup';
       app.route = 'signup';
+
+      setFocus('signupName');
     });
 
     // 404
@@ -21407,40 +21425,14 @@ module.exports = Array.isArray || function (arr) {
 
      listeners: {
        'date.change': 'setDate',
+       'hour.change': 'setHour',
+       'hour.minute': 'setMinute',
+       'hour.period': 'setPeriod'
      },
 
      observers: [
-       'computeDateTime(date, hour, minute, period)',
        'setTime(datetime)'
      ],
-
-     log: function(obj) {
-       console.log(obj);
-     },
-
-     // sets the initial date and time values
-     setTime: function() {
-       var datetime = this.datetime;
-
-       /* NOTE: There is a nasty race condition when loading the event details and
-          binding them to the properties here. The page.js calls the clientside storage
-          asynchronously but the component loads synchronously, so the properties end up
-          with the default datetime instead of the correct one. Setting the dates like
-          this ensures the date, hour, minute, and period stay in sync with the datetime
-          property. */
-       this.$.date.value = moment(datetime, 'YYYY-MM-DDTHH:mm').format('YYYY-MM-DD');
-       this.$.hour.value = moment(datetime, 'YYYY-MM-DDTHH:mm').format('HH');
-       this.$.minute.value = moment(datetime, 'YYYY-MM-DDTHH:mm').format('mm');
-       this.$.period.value = moment(datetime, 'YYYY-MM-DDTHH:mm').format('a');
-
-       // sets the date value when initializing, the external library interrupts polymer's data-binding
-       this.$.date.value = this.date;
-     },
-
-     // this sets the new date manually since data binding doesn't work with the polyfill :(
-     setDate: function(e) {
-       this.date = e.target.value;
-     },
 
      fillPeriod: function(e) {
        var key = e.detail.keyboardEvent.key;
@@ -21449,6 +21441,47 @@ module.exports = Array.isArray || function (arr) {
        } else {
          this.period = "pm";
        }
+     },
+
+     // sets the initial date and time values
+     setTime: function() {
+       var datetime = this.datetime;
+
+       this.date = moment(datetime, 'YYYY-MM-DDTHH:mm').format('YYYY-MM-DD');
+       this.hour = moment(datetime, 'YYYY-MM-DDTHH:mm').format('HH');
+       this.minute = moment(datetime, 'YYYY-MM-DDTHH:mm').format('mm');
+       this.period = moment(datetime, 'YYYY-MM-DDTHH:mm').format('a');
+
+       // make sure the date input gets loaded
+       this.$.date.value = this.date;
+     },
+
+     /* NOTE: There is a nasty race condition when loading the event details and
+        binding them to the properties. The page.js calls the clientside storage
+        asynchronously but the component loads synchronously, so the properties end up
+        with the default datetime instead of the correct one. Setting the date listners
+        like this ensures the date, hour, minute, and period stay in sync with the datetime
+        property. */
+
+     // this sets the new date manually since data binding doesn't work with the polyfill :(
+     setDate: function(e) {
+       this.date = e.target.value;
+       this.computeDateTime(this.date, this.hour, this.minute, this.period);
+     },
+
+     setDate: function(e) {
+       this.hour = e.target.value;
+       this.computeDateTime(this.date, this.hour, this.minute, this.period);
+     },
+
+     setDate: function(e) {
+       this.minute = e.target.value;
+       this.computeDateTime(this.date, this.hour, this.minute, this.period);
+     },
+
+     setHour: function(e) {
+       this.period = e.target.value;
+       this.computeDateTime(this.date, this.hour, this.minute, this.period);
      },
 
      /**
@@ -24003,7 +24036,6 @@ DOM.importStyles("@media screen", ".btr-dateinput-value{position:absolute;displa
      },
 
      _getValidity: function() {
-
        var valid = true,
            startCheck = moment(this.startDate, 'YYYY-MM-DDTHH:mm').isValid(),
            endCheck = moment(this.endDate, 'YYYY-MM-DDTHH:mm').isValid();
@@ -24039,68 +24071,58 @@ DOM.importStyles("@media screen", ".btr-dateinput-value{position:absolute;displa
 </script>
 <dom-module id="valid-form" assetpath="valid-form/">
   <template>
-    <form is="iron-form" id="form" method="[[method]]" action="[[action]]" autocomplete="[[autocomplete]]">
+    <form is="iron-form" id="form" method="[[method]]" action="[[action]]" autocomplete$="[[autocomplete]]">
       <content></content>
       <br>
       <br>
       <paper-button id="submit" type="submit" disabled="[[invalid]]" raised="">[[button]]</paper-button>
     </form>
   </template>
+  <script>
+   (function() {
+     'use-strict';
+
+     Polymer({
+       is: 'valid-form',
+
+       properties: {
+         method: {
+           type: String,
+           value: "post"
+         },
+
+         action: {
+           type: String,
+           value: "/"
+         },
+
+         button: {
+           type: String,
+           value: "Submit"
+         }
+       },
+
+       listeners: {
+         // using tap and keydown work well for handling custom element validity like <input-list>
+         'form.tap': 'validate',
+         'form.keydown': 'validate',
+         'form.change': 'validate',
+         'form.input': 'validate',
+         'submit.tap': 'submit'
+       },
+
+       validate: function() {
+         this.invalid = !this.$.form.validate();
+       },
+
+       submit: function() {
+         this.$.form.submit();
+       }
+
+     });
+   })();
+  </script>
 </dom-module>
-<script>
-(function() {
-  'use-strict';
-
-  Polymer({
-    is: 'valid-form',
-
-    properties: {
-
-      method: {
-        type: String,
-        value: "post"
-      },
-
-      action: {
-        type: String,
-        value: "/"
-      },
-
-      button: {
-        type: String,
-        value: "Submit"
-      },
-
-      autocomplete: {
-        type: Boolean,
-        value: true
-      },
-
-      invalid: {
-        type: Boolean,
-        notify: true,
-        value: true
-      }
-    },
-
-    listeners: {
-      // using tap and keydown work well for handling custom element validity like <input-list>
-      'form.tap': 'validate',
-      'form.keydown': 'validate',
-      'submit.tap': 'submit'
-    },
-
-    validate: function() {
-      this.invalid = !this.$.form.validate();
-    },
-
-    submit: function() {
-      this.$.form.submit();
-    }
-
-  });
-})();
-</script>
 
 <dom-module id="event-form" assetpath="event-form/">
 
@@ -24109,7 +24131,7 @@ DOM.importStyles("@media screen", ".btr-dateinput-value{position:absolute;displa
       <h2 class="page-title">{{eventName}}</h2>
       <p>Make a new event</p>
       <valid-form is="iron-form" id="eventForm" button="Add Event">
-        <paper-input label="event name" placeholder="Event Name" value="{{eventName::input}}" required="" autofocus=""></paper-input>
+        <paper-input id="eventName" label="event name" placeholder="Event Name" value="{{eventName::input}}" required="" autofocus=""></paper-input>
         <paper-input label="event host" placeholder="Host's Name" value="{{host::input}}" required=""></paper-input>
         <paper-input label="event type" placeholder="Event Type" value="{{type::input}}" required=""></paper-input>
         <date-range start-date="{{start}}" end-date="{{end}}" required=""></date-range>
@@ -25115,6 +25137,182 @@ value. `setMax` should move the slider to the maximum value.
    });
  })();
 </script>
+
+
+<dom-module id="password-input" assetpath="password-input/">
+  <template>
+
+    <style>
+    :host {
+      display: block;
+    }
+    </style>
+
+    <paper-input-container id="container" no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" invalid="[[invalid]]">
+
+      <label hidden$="[[!label]]">[[label]]</label>
+
+      <input is="iron-input" id="input" type="password" required$="[[required]]" disabled$="[[disabled]]" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" bind-value="{{value}}" name$="[[name]]" invalid="{{invalid}}" autofocus$="[[autofocus]]" autocomplete="password" inputmode$="[[inputmode]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" size$="[[size]]" minlength="[[minlength]]" maxlength="[[maxlength]]">
+
+      <template is="dom-if" if="[[errorMessage]]">
+        <paper-input-error id="error">[[errorMessage]]</paper-input-error>
+      </template>
+
+    </paper-input-container>
+  </template>
+
+  <script>
+   (function() {
+     'use-strict';
+
+     Polymer({
+       is: 'password-input',
+
+       behaviors: [
+         Polymer.PaperInputBehavior,
+         Polymer.IronFormElementBehavior,
+       ],
+
+       properties: {
+         autoValidate: {
+           type: Boolean,
+           value: true
+         },
+
+         /**
+          * The label for this input
+          */
+         label: {
+           type: String,
+           value: "Password"
+         },
+
+         /**
+          * A regular expression for validating the password input with.
+          * The default regex will check that the password contains at least on special character:
+          * # @ . !
+          */
+         regex: {
+           type: String,
+           value: /(?=.*[#@\\.\\!])/
+         },
+
+         /**
+          * The error message to show when the regex fails. By default it complains about not having
+          * special characters.
+          */
+         regexError: {
+           type: String,
+           value: "use one of these characters: # @ . !"
+         },
+
+         /**
+          * A minimum length for the password. The default is set to 8 characters.
+          */
+         minlength: {
+           type: Number,
+           value: 8
+         },
+
+         /**
+          * A maximum length for the password
+          */
+         maxlength: {
+           type: Number
+         },
+
+         errorMessage: {
+           type: String
+         },
+
+        value: {
+          observer: '_onValueChanged'
+        }
+       },
+
+       observers: [
+         '_onFocusedChanged(focused)'
+       ],
+
+       ready: function() {
+         // Validate any initial input
+         if (this.value)
+           this._handleAutoValidate();
+       },
+
+       /**
+        * A handler called on input
+        */
+       _onValueChanged: function(value, oldValue) {
+         // Don't run on 'ready'
+         if (oldValue == undefined)
+           return;
+
+         this._handleAutoValidate();
+       },
+
+       /**
+        * checks if the password is valid and displays an error message if it's not
+        *
+        * @return {boolean} Whether the input is currently valid or not.
+        */
+       validate: function() {
+         var valid = true,
+             errors = [];
+
+         // Empty, non-required input is valid.
+         if (!this.required && this.value == '') {
+         } else {
+
+           // invalid input, display any relevant error messages
+           if (this.value.length < this.minlength) {
+             errors.push("please use " + this.minlength + " or more characters");
+             valid = false;
+           }
+
+           if (this.value.length > this.maxlength) {
+             errors.push("please use less than " + this.maxlength + " characters");
+             valid = false;
+           }
+
+           if (!this.regex.exec(this.value)) {
+             /* FIXME: yeah, sort of wonky here there is probably a better solution.
+                The error message for the regex should be configurable though. */
+             errors.push(this.regexError);
+             valid = false;
+           }
+         }
+
+         // Update `this.invalid` since it's data-bound to container
+         this.invalid = !valid;
+
+         // Check if validity has changed
+         this.errorMessage = errors.join(" and ");
+
+         // Update container's addons (i.e. the custom error-message).
+         this.$.container.updateAddons({
+           inputElement: this.$.input,
+           value: this.value,
+           invalid: !valid
+         });
+
+         return valid;
+       },
+
+       _computeAlwaysFloatLabel: function(alwaysFloatLabel, placeholder) {
+         return placeholder || alwaysFloatLabel;
+       },
+
+       _onFocusedChanged: function(focused) {
+         if (!focused) {
+           this._handleAutoValidate();
+         }
+       }
+
+     })
+   })();
+  </script>
+</dom-module>
 
 
 
@@ -27517,7 +27715,7 @@ DOM.importStyles("@media screen", ".btr-dateinput-value{position:absolute;displa
       <h2 class="page-title">Profile</h2>
       <p>Edit your profile info here</p>
       <valid-form id="profileForm" button="Update Profile">
-        <paper-input label="name" value="{{name}}" autofocus=""></paper-input>
+        <paper-input id="profileName" label="name" value="{{value}}" autofocus=""></paper-input>
         <password-input placeholder="********" value="{{password}}"></password-input>
         <date-input label="birthday" value="{{birthday}}"></date-input>
 
@@ -27528,248 +27726,80 @@ DOM.importStyles("@media screen", ".btr-dateinput-value{position:absolute;displa
     </paper-material>
   </template>
 
-</dom-module>
-<script>
-(function() {
-  'use strict';
-
-  Polymer({
-    is: 'profile-form',
-
-    properties: {
-      name: {
-        type: String,
-        notify: true
-      },
-
-      email: {
-        type: String,
-        notify: true
-      },
-
-      birthday: {
-        type: String,
-        notify: true
-      },
-
-      password: {
-        type: String,
-        notify: true
-      },
-
-      employer: {
-        type: String,
-        notify: true
-      },
-
-      job: {
-        type: String,
-        notify: true
-      }
-
-    },
-
-    listeners: {
-      'profileForm.iron-form-submit': 'updateProfile'
-    },
-
-    updateProfile: function(data) {
-      var name = this.name,
-          passwd = this.password,
-          bday = this.birthday,
-          employer = this.employer,
-          job = this.job,
-          email = this.email;
-
-      /* Get the stored password in-case there was no password changed */
-      localforage.getItem(email).then(function(profile) {
-
-        profile = {
-          name: name,
-          email: email,
-          password: passwd || profile.password,
-          birthday: bday,
-          employer: employer,
-          job: job,
-        };
-
-        localforage.setItem(email, profile).then(function(val) {
-          var toast = document.getElementById('updateToast'),
-              msg = 'Profile updated successfully';
-
-          app.toastMessage(toast, msg, profileForm);
-        });
-      })
-    }
-
-  });
-})();
-</script>
-
-
-<dom-module id="password-input" assetpath="password-input/">
-  <template>
-
-    <style>
-    :host {
-      display: block;
-    }
-    </style>
-
-    <paper-input-container id="container" no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" invalid="[[invalid]]">
-
-      <label hidden$="[[!label]]">[[label]]</label>
-
-      <input is="iron-input" id="input" type="password" required$="[[required]]" disabled$="[[disabled]]" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" bind-value="{{value}}" name$="[[name]]" invalid="{{invalid}}" autofocus$="[[autofocus]]" autocomplete="password" inputmode$="[[inputmode]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" size$="[[size]]" minlength="[[minlength]]" maxlength="[[maxlength]]" class="paper-input-input">
-
-      <template is="dom-if" if="[[errorMessage]]">
-        <paper-input-error id="error">[[errorMessage]]</paper-input-error>
-      </template>
-
-    </paper-input-container>
-  </template>
-
   <script>
    (function() {
-     'use-strict';
+     'use strict';
 
      Polymer({
-       is: 'password-input',
-
-       behaviors: [
-         /* FIXME: PaperInputBehavior would have been used but it has a problem
-            with hitting tab to cycle through the input element (it just stays on)
-            the same input :( */
-
-         Polymer.PaperInputBehavior,
-         Polymer.IronFormElementBehavior
-       ],
+       is: 'profile-form',
 
        properties: {
-         /**
-          * The label for this input
-          */
-         label: {
+         name: {
            type: String,
-           value: "Password"
+           notify: true
          },
 
-         /**
-          * A regular expression for validating the password input with.
-          * The default regex will check that the password contains at least on special character:
-          * # @ . !
-          */
-         regex: {
+         email: {
            type: String,
-           value: /(?=.*[#@\\.\\!])/
+           notify: true
          },
 
-         /**
-          * The error message to show when the regex fails. By default it complains about not having
-          * special characters.
-          */
-         regexError: {
+         birthday: {
            type: String,
-           value: "use one of these characters: # @ . !"
+           notify: true
          },
 
-         /**
-          * A minimum length for the password. The default is set to 8 characters.
-          */
-         minlength: {
-           type: Number,
-           value: 8
+         password: {
+           type: String,
+           notify: true
          },
 
-         /**
-          * A maximum length for the password
-          */
-         maxlength: {
-           type: Number
+         employer: {
+           type: String,
+           notify: true
          },
 
-         errorMessage: {
-           type: String
+         job: {
+           type: String,
+           notify: true
          }
+
        },
 
-       /**
-        * validates onInput so the new password is checked immediately
-        */
        listeners: {
-         'input.input': 'validate'
+         'profileForm.iron-form-submit': 'updateProfile'
        },
 
-       ready: function() {
-         // Validate any initial input
-         if (this.value)
-           this._handleAutoValidate();
-       },
+       updateProfile: function(data) {
+         var name = this.name,
+             passwd = this.password,
+             bday = this.birthday,
+             employer = this.employer,
+             job = this.job,
+             email = this.email;
 
-       /**
-        * A handler called on input
-        */
-       _onValueChanged: function(value, oldValue) {
-         // Don't run on 'ready'
-         if (oldValue == undefined)
-           return;
+         /* Get the stored password in-case there was no password changed */
+         localforage.getItem(email).then(function(profile) {
 
-         this._handleAutoValidate();
-       },
+           profile = {
+             name: name,
+             email: email,
+             password: passwd || profile.password,
+             birthday: bday,
+             employer: employer,
+             job: job,
+           };
 
-       /**
-        * checks if the password is valid and displays an error message if it's not
-        *
-        * @return {boolean} Whether the input is currently valid or not.
-        */
-       validate: function() {
-         var valid = true,
-             errors = [];
+           localforage.setItem(email, profile).then(function(val) {
+             var toast = document.getElementById('updateToast'),
+                 msg = 'Profile updated successfully';
 
-         // Empty, non-required input is valid.
-         if (!this.required && this.value == '') {
-         } else {
-
-           // invalid input, display any relevant error messages
-           if (this.value.length < this.minlength) {
-             errors.push("please use " + this.minlength + " or more characters");
-             valid = false;
-           }
-
-           if (this.value.length > this.maxlength) {
-             errors.push("please use less than " + this.maxlength + " characters");
-             valid = false;
-           }
-
-           if (!this.regex.exec(this.value)) {
-             /* FIXME: yeah, sort of wonky here there is probably a better solution.
-                The error message for the regex should be configurable though. */
-             errors.push(this.regexError);
-             valid = false;
-           }
-         }
-
-         // Update `this.invalid` since it's data-bound to container
-         this.invalid = !valid;
-
-         // Check if validity has changed
-         this.errorMessage = errors.join(" and ");
-
-         // Update container's addons (i.e. the custom error-message).
-         this.$.container.updateAddons({
-           inputElement: this.$.input,
-           value: this.value,
-           invalid: !valid
-         });
-
-         return valid;
-       },
-
-       _computeAlwaysFloatLabel: function(alwaysFloatLabel, placeholder) {
-         return placeholder || alwaysFloatLabel;
+             app.toastMessage(toast, msg, profileForm);
+           });
+         })
        }
 
-     })
+     });
    })();
   </script>
 </dom-module>
