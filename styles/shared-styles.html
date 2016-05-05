@@ -12,4 +12,15 @@
           font-size: 24px!important;
         }
       }
+
+     /* Adding text-overflow handling here so the validation messages don't get
+        truncated on mobile devices. The --paper-input-error mixin doesn't seem to
+        have any effect for some reason. */
+     /deep/ .paper-input-error-0 {
+         white-space: normal; !important
+         overflow: visible; !important
+         padding-bottom: 1px;
+         position: relative;
+     }
+
     </style></template></dom-module>
