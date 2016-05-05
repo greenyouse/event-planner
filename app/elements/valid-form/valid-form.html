@@ -1,64 +1,54 @@
 <dom-module id="valid-form">
   <template>
-    <form is="iron-form" id="form" method="[[method]]" action="[[action]]" autocomplete="[[autocomplete]]">
+    <form is="iron-form" id="form" method="[[method]]" action="[[action]]" autocomplete$="[[autocomplete]]">
       <content></content>
       <br>
       <br/>
       <paper-button id="submit" type="submit" disabled="[[invalid]]" raised>[[button]]</paper-button>
     </form>
   </template>
+  <script>
+   (function() {
+     'use-strict';
+
+     Polymer({
+       is: 'valid-form',
+
+       properties: {
+         method: {
+           type: String,
+           value: "post"
+         },
+
+         action: {
+           type: String,
+           value: "/"
+         },
+
+         button: {
+           type: String,
+           value: "Submit"
+         }
+       },
+
+       listeners: {
+         // using tap and keydown work well for handling custom element validity like <input-list>
+         'form.tap': 'validate',
+         'form.keydown': 'validate',
+         'form.change': 'validate',
+         'form.input': 'validate',
+         'submit.tap': 'submit'
+       },
+
+       validate: function() {
+         this.invalid = !this.$.form.validate();
+       },
+
+       submit: function() {
+         this.$.form.submit();
+       }
+
+     });
+   })();
+  </script>
 </dom-module>
-<script>
-(function() {
-  'use-strict';
-
-  Polymer({
-    is: 'valid-form',
-
-    properties: {
-
-      method: {
-        type: String,
-        value: "post"
-      },
-
-      action: {
-        type: String,
-        value: "/"
-      },
-
-      button: {
-        type: String,
-        value: "Submit"
-      },
-
-      autocomplete: {
-        type: Boolean,
-        value: true
-      },
-
-      invalid: {
-        type: Boolean,
-        notify: true,
-        value: true
-      }
-    },
-
-    listeners: {
-      // using tap and keydown work well for handling custom element validity like <input-list>
-      'form.tap': 'validate',
-      'form.keydown': 'validate',
-      'submit.tap': 'submit'
-    },
-
-    validate: function() {
-      this.invalid = !this.$.form.validate();
-    },
-
-    submit: function() {
-      this.$.form.submit();
-    }
-
-  });
-})();
-</script>
