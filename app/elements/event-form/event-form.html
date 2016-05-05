@@ -13,7 +13,7 @@
       <h2 class="page-title">{{eventName}}</h2>
       <p>Make a new event</p>
       <valid-form is="iron-form" id="eventForm" button="Add Event">
-        <paper-input label="event name" placeholder="Event Name" value="{{eventName::input}}" required autofocus></paper-input>
+        <paper-input id="eventName" label="event name" placeholder="Event Name" value="{{eventName::input}}" required autofocus></paper-input>
         <paper-input label="event host" placeholder="Host's Name" value="{{host::input}}" required></paper-input>
         <paper-input label="event type" placeholder="Event Type" value="{{type::input}}" required></paper-input>
         <date-range start-date="{{start}}" end-date="{{end}}" required></date-range>

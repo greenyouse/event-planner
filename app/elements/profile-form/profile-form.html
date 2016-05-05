@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html"
-<link rel="import" href="../valid-form/valid-form.html":
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../valid-form/valid-form.html":>
 <link rel="import" href="../password-input/password-input.html">
 <link rel="import" href="../date-input/date-input.html">
 
@@ -10,7 +10,7 @@
       <h2 class="page-title">Profile</h2>
       <p>Edit your profile info here</p>
       <valid-form id="profileForm" button="Update Profile">
-        <paper-input label="name" value="{{name}}" autofocus></paper-input>
+        <paper-input id="profileName" label="name" value="{{value}}" autofocus></paper-input>
         <password-input placeholder="********" value="{{password}}"></password-input>
         <date-input label="birthday" value="{{birthday}}"></date-input>
 
@@ -21,80 +21,80 @@
     </paper-material>
   </template>
 
+  <script>
+   (function() {
+     'use strict';
+
+     Polymer({
+       is: 'profile-form',
+
+       properties: {
+         name: {
+           type: String,
+           notify: true
+         },
+
+         email: {
+           type: String,
+           notify: true
+         },
+
+         birthday: {
+           type: String,
+           notify: true
+         },
+
+         password: {
+           type: String,
+           notify: true
+         },
+
+         employer: {
+           type: String,
+           notify: true
+         },
+
+         job: {
+           type: String,
+           notify: true
+         }
+
+       },
+
+       listeners: {
+         'profileForm.iron-form-submit': 'updateProfile'
+       },
+
+       updateProfile: function(data) {
+         var name = this.name,
+             passwd = this.password,
+             bday = this.birthday,
+             employer = this.employer,
+             job = this.job,
+             email = this.email;
+
+         /* Get the stored password in-case there was no password changed */
+         localforage.getItem(email).then(function(profile) {
+
+           profile = {
+             name: name,
+             email: email,
+             password: passwd || profile.password,
+             birthday: bday,
+             employer: employer,
+             job: job,
+           };
+
+           localforage.setItem(email, profile).then(function(val) {
+             var toast = document.getElementById('updateToast'),
+                 msg = 'Profile updated successfully';
+
+             app.toastMessage(toast, msg, profileForm);
+           });
+         })
+       }
+
+     });
+   })();
+  </script>
 </dom-module>
-<script>
-(function() {
-  'use strict';
-
-  Polymer({
-    is: 'profile-form',
-
-    properties: {
-      name: {
-        type: String,
-        notify: true
-      },
-
-      email: {
-        type: String,
-        notify: true
-      },
-
-      birthday: {
-        type: String,
-        notify: true
-      },
-
-      password: {
-        type: String,
-        notify: true
-      },
-
-      employer: {
-        type: String,
-        notify: true
-      },
-
-      job: {
-        type: String,
-        notify: true
-      }
-
-    },
-
-    listeners: {
-      'profileForm.iron-form-submit': 'updateProfile'
-    },
-
-    updateProfile: function(data) {
-      var name = this.name,
-          passwd = this.password,
-          bday = this.birthday,
-          employer = this.employer,
-          job = this.job,
-          email = this.email;
-
-      /* Get the stored password in-case there was no password changed */
-      localforage.getItem(email).then(function(profile) {
-
-        profile = {
-          name: name,
-          email: email,
-          password: passwd || profile.password,
-          birthday: bday,
-          employer: employer,
-          job: job,
-        };
-
-        localforage.setItem(email, profile).then(function(val) {
-          var toast = document.getElementById('updateToast'),
-              msg = 'Profile updated successfully';
-
-          app.toastMessage(toast, msg, profileForm);
-        });
-      })
-    }
-
-  });
-})();
-</script>

@@ -78,6 +78,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     };
 
+    /**
+     * This sets the focus for form elements. Since this is a SPA, it doesn't reload the page
+     * and it has multiple forms that need autofocus. Seems like a reasonable work-around.
+     */
+    function setFocus(id) {
+      var el = document.getElementById(id);
+
+      el.focus();
+    }
+
     // Routes
     page('/*', scrollToTop, closeDrawer, function(ctx, next) {
       next();
@@ -96,6 +106,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     page('/new-event', withProfile, function() {
       app.menu = 'app';
       app.route = 'new-event';
+
+      setFocus('eventName');
     });
 
     page('/event/:id', withProfile, loadEvent, function(ctx) {
@@ -109,16 +121,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app.menu = 'app';
       app.route = 'profile';
       app.params = ctx.params;
+
+      setFocus('profileName');
     });
 
     page('/login', function() {
       app.menu = 'login';
       app.route = 'login';
+
+      setFocus('loginName');
     });
 
     page('/signup', function() {
       app.menu = 'signup';
       app.route = 'signup';
+
+      setFocus('signupName');
     });
 
     // 404
