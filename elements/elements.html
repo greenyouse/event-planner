@@ -21469,17 +21469,17 @@ module.exports = Array.isArray || function (arr) {
        this.computeDateTime(this.date, this.hour, this.minute, this.period);
      },
 
-     setDate: function(e) {
+     setHour: function(e) {
        this.hour = e.target.value;
        this.computeDateTime(this.date, this.hour, this.minute, this.period);
      },
 
-     setDate: function(e) {
+     setMinute: function(e) {
        this.minute = e.target.value;
        this.computeDateTime(this.date, this.hour, this.minute, this.period);
      },
 
-     setHour: function(e) {
+     setPeriod: function(e) {
        this.period = e.target.value;
        this.computeDateTime(this.date, this.hour, this.minute, this.period);
      },
